@@ -1,10 +1,10 @@
 export default interface User {
 
-    _id: string;
+    _id?: string;
     "name": string;
     "email": string;
     "age": number;
-    "adress": string;
+    "address": string;
     "password": string;
 
 }
