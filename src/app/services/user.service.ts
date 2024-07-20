@@ -8,17 +8,28 @@ import { of } from 'rxjs';
   providedIn: 'root'
 })
 export class UserService {
-  apiUrl = "http://localhost:3000/users"; // Corrected endpoint
+  apiUrl = "http://localhost:3000/";
   httpClient = inject(HttpClient);
 
   constructor() { }
 
-  getUsers(): Observable<User[]> {
-    return this.httpClient.get<User[]>(this.apiUrl).pipe(
-      catchError(error => {
-        console.error('Error fetching users:', error);
-        return of([]); // Return an empty array in case of error
-      })
-    );
+
+  getUsers() {
+
+    return this.httpClient.get<User[]>(this.apiUrl + 'users');
   }
+  getUser(id: string) {
+    return this.httpClient.get<User>(`${this.apiUrl}users/${id}`);
+  }
+  addUser(model: User) {
+
+    return this.httpClient.post(this.apiUrl + 'users', model);
+  }
+  updateUser(id: string, model: User) {
+    return this.httpClient.put(`${this.apiUrl}users/${id}`, model);
+  }
+  deleteUser(id: string) {
+    return this.httpClient.delete(`${this.apiUrl}users/${id}`);
+  }
+
 }

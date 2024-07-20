@@ -21,4 +21,14 @@ export class UsersComponent implements OnInit { // Implement OnInit interface
       console.log(this.users);
     });
   }
+  delete(id: string) {
+    const ok = confirm("Delete confirmation, do you want to remove the user?");
+    if (ok) {
+      this.userService.deleteUser(id).subscribe((result) => {
+        alert('User has been deleted successfully');
+        this.users = this.users.filter(u => u._id != id);
+
+      })
+    }
+  }
 }

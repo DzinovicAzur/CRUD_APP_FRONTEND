@@ -1,7 +1,10 @@
 import { Component, inject } from '@angular/core';
-import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatInputModule } from '@angular/material/input';
+import User from '../../types/user';
+import { UserService } from '../../services/user.service';
+import { ActivatedRoute, Router } from '@angular/router';
 
 
 @Component({
@@ -14,8 +17,7 @@ import { MatInputModule } from '@angular/material/input';
 export class UserFormComponent {
 
   formBuild = inject(FormBuilder);
-  userForm = this.formBuild.group({
-
+  userForm: FormGroup = this.formBuild.group({
     name: ['', [Validators.required]],
     email: ['', [Validators.required, Validators.email]],
     age: [''],
@@ -24,9 +26,46 @@ export class UserFormComponent {
 
   });
 
-  addUser() {
-    console.log(this.userForm.value);
+  userService = inject(UserService);
+  router = inject(Router);
+  route = inject(ActivatedRoute);
+  editUserId!: string;
+  ngOnInit() {
+    this.editUserId = this.route.snapshot.params['id'];
+    if (this.editUserId) {
+      this.userService.getUser(this.editUserId).subscribe(result => {
+        this.userForm.patchValue(result);
+      });
+    }
 
   }
 
+  addUser() {
+    if (this.userForm.invalid) {
+      alert("Please fill in all fields with valid data.");
+      return;
+    }
+    const model: User = this.userForm.value;
+    this.userService.addUser(model).subscribe((result) => {
+      alert('User added succesfully.');
+      this.router.navigateByUrl("/");
+
+    })
+
+  }
+
+  updateUser() {
+    if (this.userForm.invalid) {
+      alert("Please fill in all fields with valid data.");
+      return;
+    }
+    const model: User = this.userForm.value;
+    this.userService.updateUser(this.editUserId, model).subscribe((result) => {
+      alert('User updated successfully.');
+      this.router.navigateByUrl("/");
+    })
+
+  }
 }
+
+
